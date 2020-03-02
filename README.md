@@ -1,8 +1,8 @@
-# dataette-configure-fts
+# datasette-configure-fts
 
-[![PyPI](https://img.shields.io/pypi/v/dataette-configure-fts.svg)](https://pypi.org/project/dataette-configure-fts/)
-[![CircleCI](https://circleci.com/gh/simonw/dataette-configure-fts.svg?style=svg)](https://circleci.com/gh/simonw/dataette-configure-fts)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/simonw/dataette-configure-fts/blob/master/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/datasette-configure-fts.svg)](https://pypi.org/project/datasette-configure-fts/)
+[![CircleCI](https://circleci.com/gh/simonw/datasette-configure-fts.svg?style=svg)](https://circleci.com/gh/simonw/datasette-configure-fts)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/simonw/datasette-configure-fts/blob/master/LICENSE)
 
 Datasette plugin for enabling full-text search against selected table columns
 
@@ -10,7 +10,7 @@ Datasette plugin for enabling full-text search against selected table columns
 
 Install this plugin in the same environment as Datasette.
 
-    $ pip install dataette-configure-fts
+    $ pip install datasette-configure-fts
 
 ## Usage
 
