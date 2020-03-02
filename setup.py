@@ -1,7 +1,7 @@
 from setuptools import setup
 import os
 
-VERSION = "0.3a"
+VERSION = "0.3.1a"
 
 
 def get_long_description():
@@ -25,7 +25,7 @@ setup(
     entry_points={"datasette": ["configure_fts = datasette_configure_fts"]},
     install_requires=[
         "datasette",
-        "sqlite-utils",
+        "sqlite-utils~=2.4.1",
         "starlette",
         "python-multipart",
         "asgi-csrf~=0.2.2a0",
