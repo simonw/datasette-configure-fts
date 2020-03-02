@@ -96,3 +96,8 @@ async def test_make_table_searchable(db_path):
         "CREATE VIRTUAL TABLE [creatures_fts] USING FTS5 ( [name], [description], content=[creatures] )"
         == whitespace.sub(" ", db["creatures_fts"].schema)
     )
+    # It should have set up triggers
+    rows = db.conn.execute(
+        'select name from sqlite_master where type = "trigger" order by name'
+    ).fetchall()
+    assert [("creatures_ad",), ("creatures_ai",), ("creatures_au",)] == rows
