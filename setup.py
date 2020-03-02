@@ -1,7 +1,7 @@
 from setuptools import setup
 import os
 
-VERSION = "0.1a"
+VERSION = "0.1.1a"
 
 
 def get_long_description():
@@ -28,7 +28,7 @@ setup(
         "sqlite-utils",
         "starlette",
         "python-multipart",
-        "asgi-csrf",
+        "asgi-csrf~=0.2.2a0",
     ],
     extras_require={"test": ["pytest", "pytest-asyncio", "httpx"]},
     tests_require=["datasette-configure-fts[test]"],
