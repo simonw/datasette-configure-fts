@@ -42,6 +42,7 @@ def get_classes(datasette):
         async def get(self, request):
             databases = self.get_databases()
             database_name = request.path_params["database"]
+            just_these_tables = set(request.query_params.getlist("table"))
             try:
                 database = [db for db in databases if db.name == database_name][0]
             except IndexError:
@@ -49,6 +50,8 @@ def get_classes(datasette):
             tables = []
             hidden_tables = set(await database.hidden_table_names())
             for name in await database.table_names():
+                if just_these_tables and name not in just_these_tables:
+                    continue
                 if name in hidden_tables:
                     continue
                 # TODO: use pragma table_info([tablename]) to find just TEXT columns

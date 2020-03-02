@@ -27,6 +27,8 @@ def db_path2(tmpdir):
     path = str(tmpdir / "data2.db")
     db = sqlite_utils.Database(path)
     db["creatures"].insert({"name": "Pancakes"})
+    db["dogs"].insert({"name": "Pancakes"})
+    db["mammals"].insert({"name": "Pancakes"})
     return path
 
 
@@ -63,6 +65,28 @@ async def test_lists_databases_if_more_than_one(db_path, db_path2):
     assert 200 == response.status_code
     assert b'<a href="/-/configure-fts/data">data</a>' in response.content
     assert b'<a href="/-/configure-fts/data2">data2</a>' in response.content
+
+
+@pytest.mark.asyncio
+async def test_lists_tables_in_database(db_path2):
+    app = Datasette([db_path2]).app()
+    async with httpx.AsyncClient(app=app) as client:
+        response = await client.get(
+            "http://localhost/-/configure-fts/data2", allow_redirects=False
+        )
+    assert 200 == response.status_code
+    assert b"<h2>creatures</h2>" in response.content
+    assert b"<h2>dogs</h2>" in response.content
+    assert b"<h2>mammals</h2>" in response.content
+    # If we select just two tables, only those two
+    async with httpx.AsyncClient(app=app) as client:
+        response2 = await client.get(
+            "http://localhost/-/configure-fts/data2?table=dogs&table=mammals",
+            allow_redirects=False,
+        )
+    assert b"<h2>creatures</h2>" not in response2.content
+    assert b"<h2>dogs</h2>" in response2.content
+    assert b"<h2>mammals</h2>" in response2.content
 
 
 @pytest.mark.asyncio
