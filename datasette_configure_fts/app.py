@@ -1,10 +1,9 @@
-from starlette.responses import PlainTextResponse, HTMLResponse, RedirectResponse
+from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.routing import Router, Route
 from starlette.endpoints import HTTPEndpoint
 from starlette.exceptions import HTTPException
 from urllib.parse import quote_plus
 from asgi_csrf import asgi_csrf
-import codecs
 import sqlite_utils
 
 
