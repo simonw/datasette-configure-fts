@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Configure full-text search for {{ database.name }}.db{% endblock %}
+
+{% block extra_head %}
+
+{% endblock %}
+
+{% block content %}
+<h1>Configure full-text search for {{ database.name }}.db</h1>
+
+{% for table in tables %}
+    <h2>{{ table.name }}</h2>
+    {% if not table.fts_table %}
+        <p>Not currently configured for search</p>
+    {% else %}
+        <p>Configured for search across {{ ", ".join(table.searchable_columns) }}</p>
+    {% endif %}
+    <form action="/-/configure-fts/{{ database.name|quote_plus }}" method="POST">
+        {% for column in table.columns %}
+            <p><label><input 
+                type="checkbox"
+                name="column.{{ column }}"
+                {% if column in table.searchable_columns %}checked{% endif %}
+            > {{ column }}</label></p>
+        {% endfor %}
+        <input type="submit" value="Configure search across these columns">
+        <input type="hidden" name="table" value="{{ table.name }}">
+        <input type="hidden" name="csrftoken" value="{{ csrftoken }}">
+    </form>
+{% endfor %}
+
+{% endblock %}

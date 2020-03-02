@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Configure full-text search{% endblock %}
+
+{% block extra_head %}
+
+{% endblock %}
+
+{% block content %}
+<h1>Configure full-text search</h1>
+
+{% if databases %}
+    <p>Select a database to configure:</p>
+
+    <ul>
+    {% for database in databases %}
+        <li><a href="/-/configure-fts/{{ database.name|quote_plus }}">{{ database.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>You do not have any writable database files attached.</p>
+{% endif %}
+
+{% endblock %}
