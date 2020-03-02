@@ -29,7 +29,8 @@ def get_classes(datasette):
             databases = self.get_databases()
             if 1 == len(databases):
                 return RedirectResponse(
-                    url="/-/configure-fts/{}".format(quote_plus(databases[0].name))
+                    url="/-/configure-fts/{}".format(quote_plus(databases[0].name)),
+                    status_code=302,
                 )
             return HTMLResponse(
                 await datasette.render_template(
