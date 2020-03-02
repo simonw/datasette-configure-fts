@@ -4,7 +4,7 @@ from .app import configure_fts_app
 
 @hookimpl
 def asgi_wrapper(datasette):
-    def wrap_with_asgi_auth(app):
+    def wrap_with_configure_fts(app):
         async def wrapped_app(scope, receive, send):
             path = scope["path"]
             if path == "/-/configure-fts" or path.startswith("/-/configure-fts/"):
@@ -14,4 +14,4 @@ def asgi_wrapper(datasette):
 
         return wrapped_app
 
-    return wrap_with_asgi_auth
+    return wrap_with_configure_fts
