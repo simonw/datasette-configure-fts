@@ -48,20 +48,30 @@ def get_classes(datasette):
                 raise HTTPException(status_code=404, detail="Database not found")
             tables = []
             hidden_tables = set(await database.hidden_table_names())
-            for name in await database.table_names():
-                if just_these_tables and name not in just_these_tables:
+            for table_name in await database.table_names():
+                if just_these_tables and table_name not in just_these_tables:
                     continue
-                if name in hidden_tables:
+                if table_name in hidden_tables:
                     continue
-                # TODO: use pragma table_info([tablename]) to find just TEXT columns
-                columns = await database.table_columns(name)
-                fts_table = await database.fts_table(name)
+                # Only text columns
+                def find_text_columns(conn):
+                    columns_and_types = sqlite_utils.Database(conn)[
+                        table_name
+                    ].columns_dict
+                    return [
+                        column
+                        for column, dtype in columns_and_types.items()
+                        if dtype is str
+                    ]
+
+                columns = await database.execute_write_fn(find_text_columns, block=True)
+                fts_table = await database.fts_table(table_name)
                 searchable_columns = []
                 if fts_table:
                     searchable_columns = await database.table_columns(fts_table)
                 tables.append(
                     {
-                        "name": name,
+                        "name": table_name,
                         "columns": columns,
                         "searchable_columns": searchable_columns,
                         "fts_table": fts_table,

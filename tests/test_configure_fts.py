@@ -90,6 +90,25 @@ async def test_lists_tables_in_database(db_path2):
 
 
 @pytest.mark.asyncio
+async def test_text_columns_only(db_path):
+    app = Datasette([db_path]).app()
+    sqlite_utils.Database(db_path)["mixed_types"].insert(
+        {"name": "text", "age": 5, "height": 1.4, "description": "description",}
+    )
+    async with httpx.AsyncClient(app=app) as client:
+        response = await client.get(
+            "http://localhost/-/configure-fts/data?table=mixed_types",
+            allow_redirects=False,
+        )
+    assert 200 == response.status_code
+    content = response.content.decode("utf-8")
+    assert 'name="column.name"' in content
+    assert 'name="column.age"' not in content
+    assert 'name="column.height"' not in content
+    assert 'name="column.description"' in content
+
+
+@pytest.mark.asyncio
 async def test_make_table_searchable(db_path):
     app = Datasette([db_path]).app()
     async with httpx.AsyncClient(app=app) as client:
