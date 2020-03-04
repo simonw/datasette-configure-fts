@@ -144,3 +144,25 @@ async def test_make_table_searchable(db_path):
         'select name from sqlite_master where type = "trigger" order by name'
     ).fetchall()
     assert [("creatures_ad",), ("creatures_ai",), ("creatures_au",)] == rows
+
+
+@pytest.mark.asyncio
+async def test_uncheck_all_columns(db_path):
+    app = Datasette([db_path]).app()
+    db = sqlite_utils.Database(db_path)
+    db["creatures"].enable_fts(["name"])
+    async with httpx.AsyncClient(app=app) as client:
+        response1 = await client.get("http://localhost/-/configure-fts/data")
+        csrftoken = response1.cookies["csrftoken"]
+        response2 = await client.post(
+            "http://localhost/-/configure-fts/data",
+            data={
+                "csrftoken": csrftoken,
+                "table": "creatures",
+            },
+            allow_redirects=False,
+        )
+    assert 302 == response2.status_code
+    assert "/data/creatures" == response2.headers["location"]
+    db = sqlite_utils.Database(db_path)
+    assert ["creatures"] == db.table_names()
