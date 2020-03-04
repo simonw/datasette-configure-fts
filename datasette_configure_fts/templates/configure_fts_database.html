@@ -6,6 +6,13 @@
 
 {% endblock %}
 
+{% block nav %}
+    <p class="crumbs">
+        <a href="/">home</a>
+    </p>
+    {{ super() }}
+{% endblock %}
+
 {% block content %}
 <h1>Configure full-text search for {{ database.name }}.db</h1>
 
