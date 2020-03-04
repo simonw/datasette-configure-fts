@@ -99,7 +99,8 @@ def get_classes(datasette):
             def enable_fts(conn):
                 db = sqlite_utils.Database(conn)
                 db[table].disable_fts()
-                db[table].enable_fts(columns, create_triggers=True)
+                if columns:
+                    db[table].enable_fts(columns, create_triggers=True)
 
             await datasette.databases[database_name].execute_write_fn(
                 enable_fts, block=True
