@@ -159,7 +159,7 @@ async def test_uncheck_all_columns(db_path):
     db["creatures"].enable_fts(["name"])
     async with httpx.AsyncClient(app=app) as client:
         response1 = await client.get("http://localhost/-/configure-fts/data")
-        csrftoken = response1.cookies["csrftoken"]
+        csrftoken = response1.cookies["ds_csrftoken"]
         response2 = await client.post(
             "http://localhost/-/configure-fts/data",
             data={
