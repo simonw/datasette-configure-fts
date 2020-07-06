@@ -1,7 +1,13 @@
 from datasette import hookimpl
-from datasette.utils.asgi import Response, NotFound
+from datasette.utils.asgi import Response, NotFound, Forbidden
 from urllib.parse import quote_plus
 import sqlite_utils
+
+
+@hookimpl
+def permission_allowed(actor, action):
+    if action == "configure-fts" and actor and actor.get("id") == "root":
+        return True
 
 
 @hookimpl
@@ -17,6 +23,10 @@ def get_databases(datasette):
 
 
 async def configure_fts_index(datasette, request):
+    if not await datasette.permission_allowed(
+        request.actor, "configure-fts", default=False
+    ):
+        raise Forbidden("Permission denied for configure-fts")
     databases = get_databases(datasette)
     if 1 == len(databases):
         return Response.redirect(
@@ -30,6 +40,10 @@ async def configure_fts_index(datasette, request):
 
 
 async def configure_fts_database(datasette, request):
+    if not await datasette.permission_allowed(
+        request.actor, "configure-fts", default=False
+    ):
+        raise Forbidden("Permission denied for configure-fts")
     if request.method == "POST":
         return await configure_fts_database_post(datasette, request)
     else:

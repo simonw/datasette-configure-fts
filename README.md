@@ -14,4 +14,8 @@ Install this plugin in the same environment as Datasette.
 
 ## Usage
 
-Navigate to `/-/configure-fts` on your Datasette instance to configure FTS for tables on attached writable databases.
+Having installed the plugin, visit `/-/configure-fts` on your Datasette instance to configure FTS for tables on attached writable databases.
+
+By default only [the root actor](https://datasette.readthedocs.io/en/stable/authentication.html#using-the-root-actor) can access the page - so you'll need to run Datasette with the `--root` option and click on the link shown in the terminal to sign in and access the page.
+
+The `configure-fts` permission governs access. You can use permission plugins such as [datasette-permissions-sql](https://github.com/simonw/datasette-permissions-sql) to grant additional access to the write interface.
