@@ -51,8 +51,14 @@ async def test_redirects_to_database_if_only_one(db_path):
         )
     assert 302 == response.status_code
     assert "/-/configure-fts/data" == response.headers["location"]
-    # Check it sets a csrf cookie
-    assert "csrftoken" in response.cookies
+
+
+@pytest.mark.asyncio
+async def test_database_page_sets_cookie(db_path):
+    app = Datasette([db_path]).app()
+    async with httpx.AsyncClient(app=app) as client:
+        response = await client.get("http://localhost/-/configure-fts/data")
+    assert "ds_csrftoken" in response.cookies
 
 
 @pytest.mark.asyncio
@@ -113,7 +119,7 @@ async def test_make_table_searchable(db_path):
     app = Datasette([db_path]).app()
     async with httpx.AsyncClient(app=app) as client:
         response1 = await client.get("http://localhost/-/configure-fts/data")
-        csrftoken = response1.cookies["csrftoken"]
+        csrftoken = response1.cookies["ds_csrftoken"]
         response2 = await client.post(
             "http://localhost/-/configure-fts/data",
             data={

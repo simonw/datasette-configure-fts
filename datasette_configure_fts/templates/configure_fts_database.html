@@ -33,7 +33,7 @@
         {% endfor %}
         <input type="submit" value="Configure search across these columns">
         <input type="hidden" name="table" value="{{ table.name }}">
-        <input type="hidden" name="csrftoken" value="{{ csrftoken }}">
+        <input type="hidden" name="csrftoken" value="{{ csrftoken() }}">
     </form>
 {% endfor %}
 
