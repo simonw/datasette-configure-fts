@@ -30,7 +30,6 @@ async def configure_fts_index(datasette, request):
 
 
 async def configure_fts_database(datasette, request):
-    print("Hello from configure_fts_database")
     if request.method == "POST":
         return await configure_fts_database_post(datasette, request)
     else:
