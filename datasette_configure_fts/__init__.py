@@ -1,6 +1,6 @@
 from datasette import hookimpl
 from datasette.utils.asgi import Response, NotFound, Forbidden
-from urllib.parse import quote_plus
+import urllib
 import sqlite_utils
 
 
@@ -18,6 +18,27 @@ def register_routes():
     ]
 
 
+@hookimpl
+def table_actions(datasette, actor, database, table):
+    async def inner():
+        if not await datasette.permission_allowed(
+            actor, "configure-fts", default=False
+        ):
+            return []
+        return [
+            {
+                "href": datasette.urls.path(
+                    "/-/configure-fts/{}?{}".format(
+                        database, urllib.parse.urlencode({"table": table})
+                    )
+                ),
+                "label": "Configure full-text search",
+            }
+        ]
+
+    return inner
+
+
 def get_databases(datasette):
     return [db for db in datasette.databases.values() if db.is_mutable]
 
@@ -30,7 +51,7 @@ async def configure_fts_index(datasette, request):
     databases = get_databases(datasette)
     if 1 == len(databases):
         return Response.redirect(
-            "/-/configure-fts/{}".format(quote_plus(databases[0].name))
+            "/-/configure-fts/{}".format(urllib.parse.quote_plus(databases[0].name))
         )
     return Response.html(
         await datasette.render_template(
@@ -112,5 +133,7 @@ async def configure_fts_database_post(datasette, request):
     await datasette.databases[database_name].execute_write_fn(enable_fts, block=True)
 
     return Response.redirect(
-        "/{}/{}".format(quote_plus(database_name), quote_plus(table))
+        "/{}/{}".format(
+            urllib.parse.quote_plus(database_name), urllib.parse.quote_plus(table)
+        )
     )
