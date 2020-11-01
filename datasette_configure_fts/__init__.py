@@ -88,7 +88,10 @@ async def configure_fts_database_get(datasette, request):
     return Response.html(
         await datasette.render_template(
             "configure_fts_database.html",
-            {"database": database, "tables": tables,},
+            {
+                "database": database,
+                "tables": tables,
+            },
             request=request,
         )
     )

@@ -128,7 +128,12 @@ async def test_lists_tables_in_database(db_path2):
 async def test_text_columns_only(db_path):
     ds = Datasette([db_path])
     sqlite_utils.Database(db_path)["mixed_types"].insert(
-        {"name": "text", "age": 5, "height": 1.4, "description": "description",}
+        {
+            "name": "text",
+            "age": 5,
+            "height": 1.4,
+            "description": "description",
+        }
     )
     async with httpx.AsyncClient(app=ds.app()) as client:
         response = await client.get(
@@ -199,7 +204,10 @@ async def test_uncheck_all_columns(db_path):
         csrftoken = response1.cookies["ds_csrftoken"]
         response2 = await client.post(
             "http://localhost/-/configure-fts/data",
-            data={"csrftoken": csrftoken, "table": "creatures",},
+            data={
+                "csrftoken": csrftoken,
+                "table": "creatures",
+            },
             allow_redirects=False,
             cookies={"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")},
         )
