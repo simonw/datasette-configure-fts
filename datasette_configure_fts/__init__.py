@@ -40,7 +40,11 @@ def table_actions(datasette, actor, database, table):
 
 
 def get_databases(datasette):
-    return [db for db in datasette.databases.values() if db.is_mutable]
+    return [
+        db
+        for db in datasette.databases.values()
+        if db.is_mutable and db.name != "_internal"
+    ]
 
 
 async def configure_fts_index(datasette, request):
