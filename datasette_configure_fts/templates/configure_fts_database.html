@@ -3,7 +3,11 @@
 {% block title %}Configure full-text search for {{ database.name }}.db{% endblock %}
 
 {% block extra_head %}
-
+<style>
+form.configure-fts label {
+    width: auto;
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -16,7 +20,7 @@
     {% else %}
         <p>Configured for search across {{ ", ".join(table.searchable_columns) }}</p>
     {% endif %}
-    <form action="/-/configure-fts/{{ database.name|quote_plus }}" method="POST">
+    <form class="configure-fts" action="/-/configure-fts/{{ database.name|quote_plus }}" method="POST">
         {% for column in table.columns %}
             <p><label><input 
                 type="checkbox"
