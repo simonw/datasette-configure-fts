@@ -211,7 +211,9 @@ async def test_table_actions(db_path, authenticate):
         cookies = {"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")}
     response = await ds.client.get("/data/creatures", cookies=cookies)
     assert response.status_code == 200
-    fragment = '<li><a href="/-/configure-fts/data?table=creatures">Configure full-text search</a></li>'
+    fragment = (
+        '<li><a href="/-/configure-fts/data?table=creatures">Configure full-text search'
+    )
     if authenticate:
         # Should have column actions
         assert fragment in response.text
