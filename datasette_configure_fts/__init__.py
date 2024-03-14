@@ -33,6 +33,7 @@ def table_actions(datasette, actor, database, table):
                     )
                 ),
                 "label": "Configure full-text search",
+                "description": "Select columns to make searchable for this table",
             }
         ]
 
@@ -90,6 +91,7 @@ async def configure_fts_database_get(datasette, request):
             continue
         if table_name in hidden_tables:
             continue
+
         # Only text columns
         def find_text_columns(conn):
             columns_and_types = sqlite_utils.Database(conn)[table_name].columns_dict
