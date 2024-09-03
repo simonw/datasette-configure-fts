@@ -20,7 +20,7 @@ form.configure-fts label {
     {% else %}
         <p>Configured for search across {{ ", ".join(table.searchable_columns) }}</p>
     {% endif %}
-    <form class="configure-fts" action="/-/configure-fts/{{ database.name|quote_plus }}" method="POST">
+    <form class="core configure-fts" action="/-/configure-fts/{{ database.name|quote_plus }}" method="POST">
         {% for column in table.columns %}
             <p><label><input 
                 type="checkbox"
