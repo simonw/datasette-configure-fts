@@ -6,6 +6,11 @@ import json
 import httpx
 import re
 
+
+def root_actor_cookie(ds):
+    ds.root_enabled = True
+    return {"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")}
+
 whitespace = re.compile(r"\s+")
 
 
@@ -46,11 +51,11 @@ async def test_initial_db_is_not_searchable(db_path):
 async def test_permissions(db_path, path):
     ds = Datasette([db_path])
     response = await ds.client.get(path)
-    response.status_code == 403
+    assert response.status_code == 403
     # Now try with a root actor
     response2 = await ds.client.get(
         path,
-        cookies={"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")},
+        cookies=root_actor_cookie(ds),
     )
     assert response2.status_code != 403
 
@@ -60,7 +65,7 @@ async def test_redirects_to_database_if_only_one(db_path):
     ds = Datasette([db_path])
     response = await ds.client.get(
         "/-/configure-fts",
-        cookies={"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")},
+        cookies=root_actor_cookie(ds),
     )
     assert response.status_code == 302
     assert response.headers["location"] == "/-/configure-fts/data"
@@ -71,7 +76,7 @@ async def test_database_page_sets_cookie(db_path):
     ds = Datasette([db_path])
     response = await ds.client.get(
         "/-/configure-fts/data",
-        cookies={"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")},
+        cookies=root_actor_cookie(ds),
     )
     assert "ds_csrftoken" in response.cookies
 
@@ -81,7 +86,7 @@ async def test_lists_databases_if_more_than_one(db_path, db_path2):
     ds = Datasette([db_path, db_path2])
     response = await ds.client.get(
         "/-/configure-fts",
-        cookies={"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")},
+        cookies=root_actor_cookie(ds),
     )
     assert response.status_code == 200
     assert '<a href="/-/configure-fts/data">data</a>' in response.text
@@ -93,7 +98,7 @@ async def test_lists_tables_in_database(db_path2):
     ds = Datasette([db_path2])
     response = await ds.client.get(
         "/-/configure-fts/data2",
-        cookies={"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")},
+        cookies=root_actor_cookie(ds),
     )
     assert response.status_code == 200
     assert "<h2>creatures</h2>" in response.text
@@ -102,7 +107,7 @@ async def test_lists_tables_in_database(db_path2):
     # If we select just two tables, only those two
     response2 = await ds.client.get(
         "/-/configure-fts/data2?table=dogs&table=mammals",
-        cookies={"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")},
+        cookies=root_actor_cookie(ds),
     )
     assert "<h2>creatures</h2>" not in response2.text
     assert "<h2>dogs</h2>" in response2.text
@@ -122,7 +127,7 @@ async def test_text_columns_only(db_path):
     )
     response = await ds.client.get(
         "/-/configure-fts/data?table=mixed_types",
-        cookies={"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")},
+        cookies=root_actor_cookie(ds),
     )
     assert response.status_code == 200
     content = response.text
@@ -137,7 +142,7 @@ async def test_make_table_searchable(db_path):
     ds = Datasette([db_path])
     response1 = await ds.client.get(
         "/-/configure-fts/data",
-        cookies={"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")},
+        cookies=root_actor_cookie(ds),
     )
     csrftoken = response1.cookies["ds_csrftoken"]
     response2 = await ds.client.post(
@@ -149,7 +154,7 @@ async def test_make_table_searchable(db_path):
             "column.description": "on",
         },
         cookies={
-            "ds_actor": ds.sign({"a": {"id": "root"}}, "actor"),
+            **root_actor_cookie(ds),
             "ds_csrftoken": csrftoken,
         },
     )
@@ -182,7 +187,7 @@ async def test_uncheck_all_columns(db_path):
     db["creatures"].enable_fts(["name"])
     response1 = await ds.client.get(
         "/-/configure-fts/data",
-        cookies={"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")},
+        cookies=root_actor_cookie(ds),
     )
     csrftoken = response1.cookies["ds_csrftoken"]
     response2 = await ds.client.post(
@@ -192,7 +197,7 @@ async def test_uncheck_all_columns(db_path):
             "table": "creatures",
         },
         cookies={
-            "ds_actor": ds.sign({"a": {"id": "root"}}, "actor"),
+            **root_actor_cookie(ds),
             "ds_csrftoken": csrftoken,
         },
     )
@@ -208,7 +213,7 @@ async def test_table_actions(db_path, authenticate):
     ds = Datasette([db_path])
     cookies = None
     if authenticate:
-        cookies = {"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")}
+        cookies = root_actor_cookie(ds)
     response = await ds.client.get("/data/creatures", cookies=cookies)
     assert response.status_code == 200
     fragment = (

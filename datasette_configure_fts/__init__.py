@@ -1,13 +1,8 @@
 from datasette import hookimpl
+from datasette.permissions import Action
 from datasette.utils.asgi import Response, NotFound, Forbidden
 import urllib
 import sqlite_utils
-
-
-@hookimpl
-def permission_allowed(actor, action):
-    if action == "configure-fts" and actor and actor.get("id") == "root":
-        return True
 
 
 @hookimpl
@@ -19,10 +14,21 @@ def register_routes():
 
 
 @hookimpl
+def register_actions(datasette):
+    return [
+        Action(
+            name="configure-fts",
+            description="Configure full-text search",
+        )
+    ]
+
+
+@hookimpl
 def table_actions(datasette, actor, database, table):
     async def inner():
-        if not await datasette.permission_allowed(
-            actor, "configure-fts", default=False
+        if not await datasette.allowed(
+            actor=actor,
+            action="configure-fts",
         ):
             return []
         return [
@@ -49,8 +55,9 @@ def get_databases(datasette):
 
 
 async def configure_fts_index(datasette, request):
-    if not await datasette.permission_allowed(
-        request.actor, "configure-fts", default=False
+    if not await datasette.allowed(
+        actor=request.actor,
+        action="configure-fts",
     ):
         raise Forbidden("Permission denied for configure-fts")
     databases = get_databases(datasette)
@@ -66,8 +73,9 @@ async def configure_fts_index(datasette, request):
 
 
 async def configure_fts_database(datasette, request):
-    if not await datasette.permission_allowed(
-        request.actor, "configure-fts", default=False
+    if not await datasette.allowed(
+        actor=request.actor,
+        action="configure-fts",
     ):
         raise Forbidden("Permission denied for configure-fts")
     if request.method == "POST":
