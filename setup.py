@@ -23,7 +23,7 @@ setup(
     version=VERSION,
     packages=["datasette_configure_fts"],
     entry_points={"datasette": ["configure_fts = datasette_configure_fts"]},
-    install_requires=["datasette>=0.51", "sqlite-utils>=2.10"],
+    install_requires=["datasette>=1.0a21", "sqlite-utils>=2.10"],
     extras_require={"test": ["pytest", "pytest-asyncio", "httpx"]},
     tests_require=["datasette-configure-fts[test]"],
     package_data={"datasette_configure_fts": ["templates/*.html"]},
