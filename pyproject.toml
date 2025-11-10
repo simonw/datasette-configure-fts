@@ -1,0 +1,41 @@
+[project]
+name = "datasette-configure-fts"
+version = "1.2a0"
+description = "Datasette plugin for enabling full-text search against selected table columns"
+readme = "README.md"
+authors = [{name = "Simon Willison"}]
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dependencies = [
+    "datasette>=1.0a21",
+    "sqlite-utils>=2.10"
+]
+classifiers = [
+    "Framework :: Datasette"
+]
+
+[project.urls]
+Homepage = "https://github.com/simonw/datasette-configure-fts"
+Changelog = "https://github.com/simonw/datasette-configure-fts/releases"
+Issues = "https://github.com/simonw/datasette-configure-fts/issues"
+CI = "https://github.com/simonw/datasette-configure-fts/actions"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-asyncio",
+    "httpx"
+]
+
+[project.entry-points.datasette]
+configure_fts = "datasette_configure_fts"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+datasette_configure_fts = ["templates/*.html"]
